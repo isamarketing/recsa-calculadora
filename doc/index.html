@@ -116,71 +116,71 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 </div>
 </div>
 </div>
-<div class="footer">RECSA — Estructura de Descuentos Comerciales · Escalas editables desde la interfaz</div>
+<div class="footer">RECSA — Estructura de Descuentos Comerciales · v2.0 · Productos del Plan Comercial</div>
 <script>
-const PRODUCTS=[
+var PRODUCTS=[
   {name:'BOND AG 50',line:'Adhesivos — Vaca'},
   {name:'RF 7',line:'Adhesivos — Vaca'},
-  {name:'BOND ML 723',line:'Adhesivos ML — Construcción en seco'},
-  {name:'BOND ML 810',line:'Adhesivos ML — Construcción en seco'},
-  {name:'BOND ML 630',line:'Adhesivos ML — Construcción en seco'},
+  {name:'BOND ML 723',line:'Adhesivos ML — Construccion en seco'},
+  {name:'BOND ML 810',line:'Adhesivos ML — Construccion en seco'},
+  {name:'BOND ML 630',line:'Adhesivos ML — Construccion en seco'},
   {name:'SEAL 145',line:'Selladores — Alta performance'},
   {name:'SEAL 125',line:'Selladores — Alta performance'},
   {name:'SEAL 164',line:'Selladores — Alta performance'},
   {name:'SEAL 220',line:'Selladores — Alta performance'},
   {name:'PREN 172',line:'Prenadores'},
   {name:'BOND HP Drenaje',line:'Bond HP — Estrella'},
-  {name:'WRC Hormigón',line:'WRC Impermeabilizantes — Estrella'},
+  {name:'WRC Hormigon',line:'WRC Impermeabilizantes — Estrella'},
   {name:'WRC Chapa',line:'WRC Impermeabilizantes — Estrella'},
   {name:'WRC Multisuperficie',line:'WRC Impermeabilizantes — Estrella'},
-  {name:'WRC Acrílico',line:'WRC Impermeabilizantes — Estrella'}
+  {name:'WRC Acrilico',line:'WRC Impermeabilizantes — Estrella'}
 ];
-let selectedProducts=new Set(),weights={vol:50,port:30,acuerdo:20};
-let tiers={vol:[{label:'Básico',from:0,to:1000,score:20},{label:'Medio',from:1001,to:5000,score:40},{label:'Alto',from:5001,to:15000,score:70},{label:'Premium',from:15001,to:30000,score:90},{label:'Estratégico',from:30001,to:999999,score:100}],port:[{label:'Básico',from:1,to:1,score:20},{label:'Medio',from:2,to:2,score:50},{label:'Alto',from:3,to:4,score:80},{label:'Full',from:5,to:99,score:100}],acuerdo:[{label:'Spot',from:0,to:0,score:0},{label:'Corto',from:1,to:3,score:30},{label:'Medio',from:4,to:6,score:60},{label:'Largo',from:7,to:9,score:85},{label:'Anual',from:10,to:12,score:100}]};
+var selectedProducts=new Set(),weights={vol:50,port:30,acuerdo:20};
+var tiers={vol:[{label:'Basico',from:0,to:1000,score:20},{label:'Medio',from:1001,to:5000,score:40},{label:'Alto',from:5001,to:15000,score:70},{label:'Premium',from:15001,to:30000,score:90},{label:'Estrategico',from:30001,to:999999,score:100}],port:[{label:'Basico',from:1,to:1,score:20},{label:'Medio',from:2,to:2,score:50},{label:'Alto',from:3,to:4,score:80},{label:'Full',from:5,to:99,score:100}],acuerdo:[{label:'Spot',from:0,to:0,score:0},{label:'Corto',from:1,to:3,score:30},{label:'Medio',from:4,to:6,score:60},{label:'Largo',from:7,to:9,score:85},{label:'Anual',from:10,to:12,score:100}]};
 
 function initProducts(){
-const g=document.getElementById('productsGrid');
-let currentLine='';
-PRODUCTS.forEach(p=>{
+var g=document.getElementById('productsGrid');
+var currentLine='';
+PRODUCTS.forEach(function(p){
   if(p.line!==currentLine){
     currentLine=p.line;
-    const lbl=document.createElement('div');
+    var lbl=document.createElement('div');
     lbl.style.cssText='grid-column:1/-1;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-top:8px;padding-bottom:4px;border-bottom:1px solid var(--border)';
     lbl.textContent=currentLine;
     g.appendChild(lbl);
   }
-  const c=document.createElement('div');
+  var c=document.createElement('div');
   c.className='prod-chip';
   c.textContent=p.name;
-  c.onclick=()=>{if(selectedProducts.has(p.name)){selectedProducts.delete(p.name);c.classList.remove('active')}else{selectedProducts.add(p.name);c.classList.add('active')}calculate()};
+  c.addEventListener('click',function(){if(selectedProducts.has(p.name)){selectedProducts.delete(p.name);c.classList.remove('active')}else{selectedProducts.add(p.name);c.classList.add('active')}calculate()});
   g.appendChild(c);
 })}
 
-function renderTiers(type){const tb=document.querySelector(`#${type}Table tbody`);tb.innerHTML='';tiers[type].forEach((t,i)=>{const tr=document.createElement('tr');tr.id=`${type}_${i}`;tr.innerHTML=`<td><input class="ti-label" value="${t.label}" onchange="tiers['${type}'][${i}].label=this.value"></td><td><input class="ti" type="number" value="${t.from}" onchange="tiers['${type}'][${i}].from=+this.value;calculate()"></td><td><input class="ti" type="number" value="${t.to}" onchange="tiers['${type}'][${i}].to=+this.value;calculate()"></td><td><input class="ti" type="number" value="${t.score}" min="0" max="100" onchange="tiers['${type}'][${i}].score=+this.value;calculate()"></td>`;tb.appendChild(tr)})}
+function renderTiers(type){var tb=document.querySelector('#'+type+'Table tbody');tb.innerHTML='';tiers[type].forEach(function(t,i){var tr=document.createElement('tr');tr.id=type+'_'+i;tr.innerHTML='<td><input class="ti-label" value="'+t.label+'" onchange="tiers[\''+type+'\']['+i+'].label=this.value"></td><td><input class="ti" type="number" value="'+t.from+'" onchange="tiers[\''+type+'\']['+i+'].from=+this.value;calculate()"></td><td><input class="ti" type="number" value="'+t.to+'" onchange="tiers[\''+type+'\']['+i+'].to=+this.value;calculate()"></td><td><input class="ti" type="number" value="'+t.score+'" min="0" max="100" onchange="tiers[\''+type+'\']['+i+'].score=+this.value;calculate()"></td>';tb.appendChild(tr)})}
 
-function addTier(type){const l=tiers[type][tiers[type].length-1];tiers[type].push({label:'Nuevo',from:l?l.to+1:0,to:l?l.to+1000:1000,score:l?Math.min(l.score+10,100):50});renderTiers(type);calculate()}
+function addTier(type){var l=tiers[type][tiers[type].length-1];tiers[type].push({label:'Nuevo',from:l?l.to+1:0,to:l?l.to+1000:1000,score:l?Math.min(l.score+10,100):50});renderTiers(type);calculate()}
 function removeTier(type){if(tiers[type].length>1){tiers[type].pop();renderTiers(type);calculate()}}
 
-function updateWeights(){const v=+document.getElementById('wVol').value,p=+document.getElementById('wPort').value,a=+document.getElementById('wAcuerdo').value;weights={vol:v,port:p,acuerdo:a};const t=v+p+a;document.getElementById('wVolVal').textContent=v+'%';document.getElementById('wPortVal').textContent=p+'%';document.getElementById('wAcuerdoVal').textContent=a+'%';document.getElementById('barVol').style.width=(v/Math.max(t,1)*100)+'%';document.getElementById('barPort').style.width=(p/Math.max(t,1)*100)+'%';document.getElementById('barAcuerdo').style.width=(a/Math.max(t,1)*100)+'%';const w=document.getElementById('weightWarn');if(t!==100){w.textContent=`⚠ Total: ${t}% (debe ser 100%)`;w.style.color='var(--accent3)'}else{w.textContent='✓ Total: 100%';w.style.color='var(--accent2)'}calculate()}
+function updateWeights(){var v=+document.getElementById('wVol').value,p=+document.getElementById('wPort').value,a=+document.getElementById('wAcuerdo').value;weights={vol:v,port:p,acuerdo:a};var t=v+p+a;document.getElementById('wVolVal').textContent=v+'%';document.getElementById('wPortVal').textContent=p+'%';document.getElementById('wAcuerdoVal').textContent=a+'%';document.getElementById('barVol').style.width=(v/Math.max(t,1)*100)+'%';document.getElementById('barPort').style.width=(p/Math.max(t,1)*100)+'%';document.getElementById('barAcuerdo').style.width=(a/Math.max(t,1)*100)+'%';var w=document.getElementById('weightWarn');if(t!==100){w.textContent='Total: '+t+'% (debe ser 100%)';w.style.color='var(--accent3)'}else{w.textContent='Total: 100%';w.style.color='var(--accent2)'}calculate()}
 
-function getScore(v,tl){for(const t of tl)if(v>=t.from&&v<=t.to)return t.score/100;return tl[tl.length-1].score/100}
-function getTierIdx(v,tl){for(let i=0;i<tl.length;i++)if(v>=tl[i].from&&v<=tl[i].to)return i;return tl.length-1}
-function hlTier(type,idx){tiers[type].forEach((_,i)=>{const r=document.getElementById(`${type}_${i}`);if(r)r.classList.toggle('active',i===idx)})}
+function getScore(v,tl){for(var i=0;i<tl.length;i++){if(v>=tl[i].from&&v<=tl[i].to)return tl[i].score/100}return tl[tl.length-1].score/100}
+function getTierIdx(v,tl){for(var i=0;i<tl.length;i++){if(v>=tl[i].from&&v<=tl[i].to)return i}return tl.length-1}
+function hlTier(type,idx){tiers[type].forEach(function(_,i){var r=document.getElementById(type+'_'+i);if(r)r.classList.toggle('active',i===idx)})}
 
-function calculate(){const vol=+document.getElementById('dealVol').value||0,plazo=+document.getElementById('dealPlazo').value||0,nP=selectedProducts.size,maxD=+document.getElementById('maxDiscount').value||10;const vS=getScore(vol,tiers.vol),pS=getScore(nP,tiers.port),aS=getScore(plazo,tiers.acuerdo);const tW=weights.vol+weights.port+weights.acuerdo,wV=tW>0?weights.vol/tW:0,wP=tW>0?weights.port/tW:0,wA=tW>0?weights.acuerdo/tW:0;const ws=vS*wV+pS*wP+aS*wA,disc=ws*maxD,vC=vS*wV*maxD,pC=pS*wP*maxD,aC=aS*wA*maxD;
-document.getElementById('resultDiscount').textContent=disc.toFixed(1)+'%';document.getElementById('resultSub').textContent=`Score ponderado: ${(ws*100).toFixed(0)}% de ${maxD}% máximo`;
-document.getElementById('bVol').textContent=vC.toFixed(1)+'%';document.getElementById('bVolDetail').textContent=vol.toLocaleString('es-AR')+' kg → '+(vS*100).toFixed(0)+'%';document.getElementById('gVol').style.width=(vS*100)+'%';
-document.getElementById('bPort').textContent=pC.toFixed(1)+'%';document.getElementById('bPortDetail').textContent=nP+' prod → '+(pS*100).toFixed(0)+'%';document.getElementById('gPort').style.width=(pS*100)+'%';
-document.getElementById('bAcuerdo').textContent=aC.toFixed(1)+'%';document.getElementById('bAcuerdoDetail').textContent=plazo+' meses → '+(aS*100).toFixed(0)+'%';document.getElementById('gAcuerdo').style.width=(aS*100)+'%';
+function calculate(){var vol=+document.getElementById('dealVol').value||0,plazo=+document.getElementById('dealPlazo').value||0,nP=selectedProducts.size,maxD=+document.getElementById('maxDiscount').value||10;var vS=getScore(vol,tiers.vol),pS=getScore(nP,tiers.port),aS=getScore(plazo,tiers.acuerdo);var tW=weights.vol+weights.port+weights.acuerdo,wV=tW>0?weights.vol/tW:0,wP=tW>0?weights.port/tW:0,wA=tW>0?weights.acuerdo/tW:0;var ws=vS*wV+pS*wP+aS*wA,disc=ws*maxD,vC=vS*wV*maxD,pC=pS*wP*maxD,aC=aS*wA*maxD;
+document.getElementById('resultDiscount').textContent=disc.toFixed(1)+'%';document.getElementById('resultSub').textContent='Score ponderado: '+(ws*100).toFixed(0)+'% de '+maxD+'% maximo';
+document.getElementById('bVol').textContent=vC.toFixed(1)+'%';document.getElementById('bVolDetail').textContent=vol.toLocaleString('es-AR')+' kg = '+(vS*100).toFixed(0)+'%';document.getElementById('gVol').style.width=(vS*100)+'%';
+document.getElementById('bPort').textContent=pC.toFixed(1)+'%';document.getElementById('bPortDetail').textContent=nP+' prod = '+(pS*100).toFixed(0)+'%';document.getElementById('gPort').style.width=(pS*100)+'%';
+document.getElementById('bAcuerdo').textContent=aC.toFixed(1)+'%';document.getElementById('bAcuerdoDetail').textContent=plazo+' meses = '+(aS*100).toFixed(0)+'%';document.getElementById('gAcuerdo').style.width=(aS*100)+'%';
 hlTier('vol',getTierIdx(vol,tiers.vol));hlTier('port',getTierIdx(nP,tiers.port));hlTier('acuerdo',getTierIdx(plazo,tiers.acuerdo));
-const el=document.getElementById('resultDiscount');el.style.color=disc>=maxD*.8?'var(--accent2)':disc>=maxD*.5?'var(--accent4)':disc>0?'var(--accent)':'var(--text-dim)';
+var el=document.getElementById('resultDiscount');el.style.color=disc>=maxD*.8?'var(--accent2)':disc>=maxD*.5?'var(--accent4)':disc>0?'var(--accent)':'var(--text-dim)';
 renderScenarios(maxD)}
 
-function renderScenarios(maxD){const sc=[{name:'Compra spot mínima',vol:500,prods:1,plazo:0},{name:'Cliente medio con acuerdo',vol:5000,prods:2,plazo:6},{name:'Cliente premium multi-producto',vol:15000,prods:4,plazo:6},{name:'Cliente estratégico full',vol:30000,prods:5,plazo:12}];const c=document.getElementById('scenarios');c.innerHTML='';const tW=weights.vol+weights.port+weights.acuerdo,wV=tW>0?weights.vol/tW:0,wP=tW>0?weights.port/tW:0,wA=tW>0?weights.acuerdo/tW:0;
-sc.forEach(s=>{const vS=getScore(s.vol,tiers.vol),pS=getScore(s.prods,tiers.port),aS=getScore(s.plazo,tiers.acuerdo),ws=vS*wV+pS*wP+aS*wA,disc=ws*maxD,bW=maxD>0?disc/maxD*100:0,col=disc>=maxD*.8?'var(--accent2)':disc>=maxD*.5?'var(--accent4)':'var(--accent)';
-const d=document.createElement('div');d.style.cssText=`background:var(--surface2);border-radius:8px;padding:12px 16px;cursor:pointer;border:1px solid var(--border);transition:all .2s`;d.onmouseenter=()=>d.style.borderColor=col;d.onmouseleave=()=>d.style.borderColor='var(--border)';
-d.onclick=()=>{document.getElementById('dealVol').value=s.vol;document.getElementById('dealPlazo').value=s.plazo;selectedProducts.clear();document.querySelectorAll('.prod-chip').forEach((c,i)=>{if(i<s.prods){selectedProducts.add(PRODUCTS[i].name);c.classList.add('active')}else c.classList.remove('active')});calculate()};
-d.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:13px;font-weight:500">${s.name}</span><span style="font-family:'Space Mono',monospace;font-size:16px;font-weight:700;color:${col}">${disc.toFixed(1)}%</span></div><div style="font-size:11px;color:var(--text-dim);margin-bottom:6px">${s.vol.toLocaleString('es-AR')} kg · ${s.prods} producto${s.prods>1?'s':''} · ${s.plazo>0?s.plazo+' meses':'spot'}</div><div style="height:4px;background:var(--surface);border-radius:2px;overflow:hidden"><div style="height:100%;width:${bW}%;background:${col};border-radius:2px"></div></div>`;c.appendChild(d)})}
+function renderScenarios(maxD){var sc=[{name:'Compra spot minima',vol:500,prods:1,plazo:0},{name:'Cliente medio con acuerdo',vol:5000,prods:2,plazo:6},{name:'Cliente premium multi-producto',vol:15000,prods:4,plazo:6},{name:'Cliente estrategico full',vol:30000,prods:5,plazo:12}];var c=document.getElementById('scenarios');c.innerHTML='';var tW=weights.vol+weights.port+weights.acuerdo,wV=tW>0?weights.vol/tW:0,wP=tW>0?weights.port/tW:0,wA=tW>0?weights.acuerdo/tW:0;
+sc.forEach(function(s){var vS=getScore(s.vol,tiers.vol),pS=getScore(s.prods,tiers.port),aS=getScore(s.plazo,tiers.acuerdo),ws=vS*wV+pS*wP+aS*wA,disc=ws*maxD,bW=maxD>0?disc/maxD*100:0,col=disc>=maxD*.8?'var(--accent2)':disc>=maxD*.5?'var(--accent4)':'var(--accent)';
+var d=document.createElement('div');d.style.cssText='background:var(--surface2);border-radius:8px;padding:12px 16px;cursor:pointer;border:1px solid var(--border);transition:all .2s';d.onmouseenter=function(){d.style.borderColor=col};d.onmouseleave=function(){d.style.borderColor='var(--border)'};
+d.addEventListener('click',function(){document.getElementById('dealVol').value=s.vol;document.getElementById('dealPlazo').value=s.plazo;selectedProducts.clear();var chips=document.querySelectorAll('.prod-chip');chips.forEach(function(ch,i){if(i<s.prods){selectedProducts.add(PRODUCTS[i].name);ch.classList.add('active')}else{ch.classList.remove('active')}});calculate()});
+d.innerHTML='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span style="font-size:13px;font-weight:500">'+s.name+'</span><span style="font-family:Space Mono,monospace;font-size:16px;font-weight:700;color:'+col+'">'+disc.toFixed(1)+'%</span></div><div style="font-size:11px;color:var(--text-dim);margin-bottom:6px">'+s.vol.toLocaleString('es-AR')+' kg · '+s.prods+' producto'+(s.prods>1?'s':'')+' · '+(s.plazo>0?s.plazo+' meses':'spot')+'</div><div style="height:4px;background:var(--surface);border-radius:2px;overflow:hidden"><div style="height:100%;width:'+bW+'%;background:'+col+';border-radius:2px"></div></div>';c.appendChild(d)})}
 
 initProducts();renderTiers('vol');renderTiers('port');renderTiers('acuerdo');updateWeights();calculate();
 </script>
